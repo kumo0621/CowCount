@@ -1,0 +1,4 @@
+name: CowCount
+version: '${project.version}'
+main: com.github.kumo0621.cowcount.CowCount
+api-version: 1.16
