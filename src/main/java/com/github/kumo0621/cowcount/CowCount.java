@@ -1,10 +1,8 @@
 package com.github.kumo0621.cowcount;
 
 import org.bukkit.Location;
-import org.bukkit.block.data.type.TNT;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,21 +25,23 @@ public final class CowCount extends JavaPlugin implements org.bukkit.event.Liste
 
             public void run() {
                 //何かやりたいときはここに書き込む
-                for (Map.Entry<Entity, Integer> entry : mapList.entrySet()) {
+                mapList.entrySet().removeIf((entry) -> {
                     int set = 1;
                     int value = entry.getValue();
                     value -= set;
                     entry.setValue(value);
-                    System.out.println(entry);
                     Entity entity = entry.getKey();
                     entity.setCustomNameVisible(true);
                     entity.setCustomName(String.valueOf(value));
-                    if(value==0) {
-                        Location location = entity.getLocation();
-                        location.getWorld().createExplosion(location,4,false,false);
-                        mapList.remove(entity);
+                    Location location = entity.getLocation();
+                    if (value == 0) {
+                        if (!entity.getScoreboardTags().contains("cow") && !entity.getScoreboardTags().contains("mooshroom")) {
+                            location.getWorld().createExplosion(location, 10, false, false);
+                        }
+                        return true;
                     }
-                }
+                    return false;
+                });
             }
         }.runTaskTimer(this, 0L, 10L);
 
@@ -55,6 +55,9 @@ public final class CowCount extends JavaPlugin implements org.bukkit.event.Liste
     @EventHandler
     public void entitySpawnEvent(EntitySpawnEvent e) {
         if (e.getEntityType() == EntityType.COW) {
+            Entity entity = e.getEntity();
+            mapList.put(entity, count);
+        } else if (e.getEntityType() == EntityType.MUSHROOM_COW) {
             Entity entity = e.getEntity();
             mapList.put(entity, count);
         }
