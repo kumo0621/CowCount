@@ -2,3 +2,11 @@ name: CowCount
 version: '${project.version}'
 main: com.github.kumo0621.cowcount.CowCount
 api-version: 1.16
+commands:
+  cowCount:
+    aliases: cow
+    permission: cowCount
+
+permissions:
+  cowCount:
+    default: true
